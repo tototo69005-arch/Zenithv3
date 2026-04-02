@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zenith Travel and Tours — Madagascar Sur Mesure</title>
+  <meta name="description" content="Agence de voyage spécialisée Madagascar. Circuits sur mesure, transport 4x4, accompagnement trilingue FR/EN/MGA." />
+  <link rel="icon" href="logo.jpg" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    /* Lang switcher */
+    .lang-switcher { display:flex; gap:0.3rem; align-items:center; }
+    .lang-btn {
+      background:transparent; border:1.5px solid rgba(255,255,255,0.25); color:rgba(255,255,255,0.6);
+      font-size:0.68rem; font-weight:700; letter-spacing:0.1em; padding:0.28em 0.65em;
+      border-radius:4px; cursor:pointer; transition:all 0.2s; font-family:var(--font-body);
+    }
+    .lang-btn:hover { border-color:var(--gold); color:var(--gold); }
+    .lang-btn.active { background:var(--gold); border-color:var(--gold); color:var(--darker); }
+
+    /* HERO */
+    #hero { position:relative; height:100svh; min-height:620px; display:flex; align-items:center; overflow:hidden; }
+    .hero-bg { position:absolute; inset:0; background:url('https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=1800&q=80') center 55%/cover; animation:heroZoom 20s ease-in-out infinite alternate; }
+    @keyframes heroZoom { from{transform:scale(1)} to{transform:scale(1.07)} }
+    .hero-overlay { position:absolute; inset:0; background:linear-gradient(110deg,rgba(13,13,26,.80) 0%,rgba(13,13,26,.38) 55%,rgba(13,13,26,.58) 100%); }
+    .hero-body { position:relative; z-index:2; padding-top:5rem; max-width:700px; }
+    .hero-eyebrow { display:inline-flex; align-items:center; gap:.6rem; font-size:.68rem; font-weight:600; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); animation:fadeUp .8s ease both; }
+    .hero-eyebrow::before { content:''; display:block; width:28px; height:1.5px; background:var(--gold); }
+    .hero-h1 { font-family:var(--font-title); font-size:clamp(2.8rem,7.5vw,6rem); font-weight:900; line-height:1.04; margin:1rem 0 .6rem; animation:fadeUp .8s ease .15s both; }
+    .hero-h1 em { font-style:italic; color:var(--gold); }
+    .hero-sub { font-family:var(--font-serif); font-size:clamp(.98rem,2vw,1.2rem); font-style:italic; color:rgba(255,255,255,.78); margin-bottom:2.2rem; animation:fadeUp .8s ease .3s both; }
+    .hero-ctas { display:flex; flex-wrap:wrap; gap:.85rem; animation:fadeUp .8s ease .45s both; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+    .scroll-hint { position:absolute; bottom:6.5rem; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:.4rem; z-index:2; color:rgba(255,255,255,.4); font-size:.58rem; letter-spacing:.2em; text-transform:uppercase; animation:fadeUp 1s ease .9s both; }
+    .scroll-hint-line { width:1px; height:40px; background:linear-gradient(to bottom,transparent,rgba(255,255,255,.4)); animation:lineAnim 2s ease-in-out infinite; }
+    @keyframes lineAnim { 0%,100%{opacity:.3;transform:scaleY(.6)} 50%{opacity:1;transform:scaleY(1)} }
+    .stats-strip { position:absolute; bottom:0; left:0; right:0; z-index:3; background:rgba(10,10,22,.72); backdrop-filter:blur(14px); border-top:1px solid var(--border); }
+    .stats-inner { display:grid; grid-template-columns:repeat(4,1fr); }
+    .stat { padding:1rem; text-align:center; border-right:1px solid var(--border); }
+    .stat:last-child { border-right:none; }
+    .stat-n { font-family:var(--font-title); font-size:clamp(1.4rem,3vw,1.9rem); font-weight:700; color:var(--gold); line-height:1; }
+    .stat-l { font-size:.62rem; letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.45); margin-top:.2rem; }
+
+    /* ABOUT */
+    #about { padding:var(--section-py) 0; background:var(--darker); }
+    .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:clamp(2.5rem,6vw,5rem); align-items:center; }
+    .about-photos { position:relative; height:clamp(380px,50vw,520px); }
+    .ap-main { position:absolute; top:0; left:0; width:72%; height:78%; border-radius:var(--r); overflow:hidden; }
+    .ap-accent { position:absolute; bottom:0; right:0; width:52%; height:50%; border-radius:var(--r); overflow:hidden; border:4px solid var(--darker); }
+    .ap-badge { position:absolute; top:50%; left:61%; transform:translate(-50%,-50%); width:80px; height:80px; border-radius:50%; background:var(--gold); color:var(--darker); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; line-height:1.1; z-index:2; box-shadow:0 6px 28px rgba(245,166,35,.5); }
+    .ap-badge b { font-family:var(--font-title); font-size:1.4rem; font-weight:700; }
+    .ap-badge span { font-size:.5rem; font-weight:600; letter-spacing:.05em; text-transform:uppercase; }
+    .about-text .eyebrow { margin-bottom:.9rem; }
+    .about-text .section-title { margin-bottom:1.2rem; }
+    .about-text p { font-family:var(--font-serif); font-size:clamp(.93rem,1.5vw,1.03rem); color:rgba(255,255,255,.7); margin-bottom:1rem; }
+    .founder-quote { margin:1.5rem 0; padding:1.2rem 1.5rem; border-left:3px solid var(--gold); background:rgba(245,166,35,.06); border-radius:0 var(--r-sm) var(--r-sm) 0; }
+    .founder-quote p { font-family:var(--font-title); font-size:1.05rem; font-style:italic; color:rgba(255,255,255,.85); margin:0 0 .5rem; }
+    .founder-quote cite { font-size:.78rem; color:var(--gold); font-style:normal; font-weight:600; }
+    .lang-chips { display:flex; gap:.5rem; flex-wrap:wrap; margin-top:1.2rem; }
+    .lang-chip { padding:.35em .9em; background:rgba(60,176,67,.12); border:1px solid rgba(60,176,67,.3); border-radius:50px; font-size:.74rem; font-weight:600; color:var(--green); }
+    .values-grid { display:grid; grid-template-columns:1fr 1fr; gap:.85rem; margin-top:1.6rem; }
+    .value-card { display:flex; align-items:flex-start; gap:.75rem; padding:1rem; background:rgba(255,255,255,.04); border:1px solid var(--border-w); border-radius:var(--r-sm); transition:border-color .3s; }
+    .value-card:hover { border-color:rgba(245,166,35,.3); }
+    .val-icon { width:34px; height:34px; background:rgba(245,166,35,.1); border-radius:8px; display:grid; place-items:center; color:var(--gold); font-size:.85rem; flex-shrink:0; }
+    .val-text b { display:block; font-size:.8rem; font-weight:600; margin-bottom:.1rem; }
+    .val-text span { font-size:.76rem; color:var(--gray); line-height:1.4; }
+
+    /* CIRCUITS */
+    #circuits { padding:var(--section-py) 0; background:var(--dark); }
+    .section-head { text-align:center; margin-bottom:3rem; }
+    .circuits-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.6rem; }
+    .c-card { background:var(--mid); border-radius:var(--r); overflow:hidden; border:1px solid var(--border-w); display:flex; flex-direction:column; transition:transform .32s,box-shadow .32s,border-color .32s; }
+    .c-card:hover { transform:translateY(-7px); box-shadow:0 20px 52px rgba(0,0,0,.45); border-color:rgba(245,166,35,.28); }
+    .c-img { height:210px; overflow:hidden; position:relative; flex-shrink:0; }
+    .c-img img { transition:transform .55s ease; }
+    .c-card:hover .c-img img { transform:scale(1.07); }
+    .c-pill { position:absolute; top:.9rem; right:.9rem; background:rgba(10,10,22,.78); backdrop-filter:blur(6px); border:1px solid var(--border); color:var(--gold); font-size:.6rem; font-weight:600; letter-spacing:.14em; text-transform:uppercase; padding:.28em .8em; border-radius:50px; }
+    .c-body { padding:1.4rem 1.5rem 1.7rem; display:flex; flex-direction:column; flex:1; }
+    .c-meta { display:flex; gap:1rem; margin-bottom:.6rem; }
+    .c-meta span { font-size:.7rem; font-weight:500; letter-spacing:.07em; text-transform:uppercase; color:var(--gray); display:flex; align-items:center; gap:.3em; }
+    .c-meta i { color:var(--green); font-size:.75rem; }
+    .c-card h3 { font-family:var(--font-title); font-size:clamp(1.05rem,2vw,1.18rem); font-weight:600; line-height:1.28; margin-bottom:.5rem; }
+    .c-card p { font-size:.84rem; color:rgba(255,255,255,.56); line-height:1.62; flex:1; margin-bottom:1.2rem; }
+    .c-foot { display:flex; align-items:center; justify-content:space-between; gap:.8rem; }
+    .c-price .from { font-size:.62rem; letter-spacing:.1em; text-transform:uppercase; color:var(--gray); }
+    .c-price .amt { font-family:var(--font-title); font-size:1.5rem; font-weight:700; color:var(--gold); line-height:1; }
+    .c-price .per { font-size:.67rem; color:var(--gray); }
+
+    /* GROUPED */
+    #organised { padding:var(--section-py) 0; background:var(--darker); }
+    .org-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1.6rem; }
+    .org-card { background:var(--mid); border:1px solid var(--border-w); border-radius:var(--r); overflow:hidden; display:flex; flex-direction:column; transition:transform .3s,box-shadow .3s,border-color .3s; }
+    .org-card:hover { transform:translateY(-5px); box-shadow:0 16px 44px rgba(0,0,0,.4); border-color:rgba(245,166,35,.25); }
+    .org-img { height:200px; overflow:hidden; position:relative; flex-shrink:0; }
+    .org-img img { transition:transform .5s; }
+    .org-card:hover .org-img img { transform:scale(1.06); }
+    .org-date-badge { position:absolute; top:.9rem; left:.9rem; background:var(--dark); border:1px solid var(--border); border-radius:var(--r-sm); padding:.4em .75em; text-align:center; line-height:1.2; }
+    .org-date-badge .day { font-family:var(--font-title); font-size:1.4rem; font-weight:700; color:var(--gold); }
+    .org-date-badge .month { font-size:.62rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--gray-l); }
+    .org-body { padding:1.4rem 1.5rem 1.8rem; display:flex; flex-direction:column; flex:1; }
+    .org-card h3 { font-family:var(--font-title); font-size:1.1rem; font-weight:600; margin-bottom:.35rem; line-height:1.3; }
+    .org-card .org-sub { font-size:.82rem; color:var(--gray); margin-bottom:1rem; }
+    .places-bar { margin-bottom:1.2rem; }
+    .bar-track { height:6px; background:rgba(255,255,255,.1); border-radius:50px; overflow:hidden; margin-bottom:.38rem; }
+    .bar-fill { height:100%; background:linear-gradient(90deg,var(--green),var(--gold)); border-radius:50px; transition:width .8s ease; }
+    .bar-label { font-size:.75rem; font-weight:600; color:var(--green); }
+    .org-footer { display:flex; align-items:center; justify-content:space-between; gap:.8rem; margin-top:auto; }
+    .org-price .from { font-size:.62rem; letter-spacing:.1em; text-transform:uppercase; color:var(--gray); }
+    .org-price .amt { font-family:var(--font-title); font-size:1.45rem; font-weight:700; color:var(--gold); line-height:1; }
+    .org-price .per { font-size:.67rem; color:var(--gray); }
+    .org-info { font-size:.75rem; color:var(--gray); margin-top:.5rem; }
+
+    /* SERVICES */
+    #services { padding:var(--section-py) 0; background:var(--dark); position:relative; overflow:hidden; }
+    .services-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1.4rem; }
+    .svc { padding:2rem 1.4rem 1.8rem; background:rgba(255,255,255,.03); border:1px solid var(--border-w); border-radius:var(--r); text-align:center; position:relative; overflow:hidden; transition:transform .3s,background .3s; }
+    .svc::after { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--green),var(--gold)); transform:scaleX(0); transition:transform .35s; }
+    .svc:hover { transform:translateY(-5px); background:rgba(255,255,255,.06); }
+    .svc:hover::after { transform:scaleX(1); }
+    .svc-icon { width:56px; height:56px; margin:0 auto 1.2rem; background:linear-gradient(135deg,rgba(60,176,67,.12),rgba(245,166,35,.12)); border-radius:14px; display:grid; place-items:center; font-size:1.4rem; color:var(--green); }
+    .svc h3 { font-family:var(--font-title); font-size:1rem; font-weight:600; margin-bottom:.6rem; }
+    .svc p { font-size:.82rem; color:rgba(255,255,255,.52); line-height:1.65; }
+
+    /* TEMOS */
+    #temoignages { padding:var(--section-py) 0; background:var(--darker); }
+    .temo-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.6rem; }
+    .temo { background:var(--mid); border:1px solid var(--border-w); border-radius:var(--r); padding:1.8rem; transition:transform .3s; }
+    .temo:hover { transform:translateY(-5px); }
+    .temo-stars { color:var(--gold); font-size:.82rem; letter-spacing:.1em; margin-bottom:.9rem; }
+    .temo-quote { font-size:2.8rem; color:var(--gold); opacity:.18; font-family:Georgia,serif; line-height:1; margin-bottom:.4rem; }
+    .temo-text { font-family:var(--font-serif); font-size:clamp(.9rem,1.5vw,1rem); font-style:italic; color:rgba(255,255,255,.78); line-height:1.72; margin-bottom:1.4rem; }
+    .temo-author { display:flex; align-items:center; gap:.85rem; }
+    .temo-avatar { width:44px; height:44px; border-radius:50%; overflow:hidden; flex-shrink:0; border:2px solid var(--gold); }
+    .temo-name { font-size:.88rem; font-weight:600; display:block; }
+    .temo-origin { font-size:.74rem; color:var(--gray); }
+
+    /* CTA */
+    .cta-band { padding:clamp(3.5rem,7vw,5rem) 0; background:linear-gradient(135deg,#2d8a33 0%,#1f6224 100%); text-align:center; position:relative; overflow:hidden; }
+    .cta-band::before { content:''; position:absolute; inset:0; background:url('https://images.unsplash.com/photo-1559128010-7c1ad6e1b6a5?w=1200&q=50') center/cover; opacity:.1; }
+    .cta-band .container { position:relative; }
+    .cta-band h2 { font-family:var(--font-title); font-size:clamp(1.8rem,4vw,3rem); font-weight:700; margin-bottom:.7rem; }
+    .cta-band p { font-family:var(--font-serif); font-size:clamp(.95rem,2vw,1.2rem); font-style:italic; opacity:.88; margin-bottom:2rem; }
+
+    /* CONTACT */
+    #contact { padding:var(--section-py) 0; background:var(--dark); }
+    .contact-grid { display:grid; grid-template-columns:1fr 1.55fr; gap:clamp(2.5rem,6vw,5rem); align-items:start; }
+    .contact-info .section-title { margin:.8rem 0 1.4rem; }
+    .ci-row { display:flex; align-items:flex-start; gap:1rem; margin-bottom:1.3rem; }
+    .ci-icon { width:42px; height:42px; background:rgba(245,166,35,.1); border:1px solid var(--border); border-radius:10px; display:grid; place-items:center; color:var(--gold); flex-shrink:0; }
+    .ci-label { font-size:.68rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--gray); margin-bottom:.15rem; }
+    .ci-val { font-size:.95rem; }
+    .ci-val a:hover { color:var(--gold); }
+    .form-card { background:var(--mid); border:1px solid var(--border-w); border-radius:var(--r); padding:clamp(1.5rem,4vw,2.5rem); }
+    .form-card h3 { font-family:var(--font-title); font-size:clamp(1.3rem,2.5vw,1.6rem); font-weight:600; margin-bottom:.3rem; }
+    .form-intro { font-size:.83rem; color:var(--gray-l); margin-bottom:1.6rem; }
+    .f-submit { width:100%; justify-content:center; margin-top:.5rem; font-size:.82rem; padding:1em; }
+    .form-success { display:none; text-align:center; padding:2.5rem 1rem; }
+    .form-success i { font-size:2.8rem; color:var(--green); margin-bottom:.8rem; display:block; }
+    .form-success h4 { font-family:var(--font-title); font-size:1.4rem; margin-bottom:.5rem; }
+    .form-success p { font-size:.88rem; color:var(--gray); }
+    .contact-pref-group { display:flex; gap:.7rem; flex-wrap:wrap; margin-top:.3rem; }
+    .pref-option { display:none; }
+    .pref-label { display:inline-flex; align-items:center; gap:.4em; padding:.5em 1.1em; border-radius:50px; border:1.5px solid rgba(255,255,255,.2); font-size:.78rem; font-weight:500; color:var(--gray-l); cursor:pointer; transition:all .22s; }
+    .pref-label:hover { border-color:var(--gold); color:var(--gold); }
+    .pref-option:checked + .pref-label { background:var(--gold); border-color:var(--gold); color:var(--darker); }
+
+    /* RESPONSIVE */
+    @media(max-width:1024px){.circuits-grid{grid-template-columns:repeat(2,1fr)}.services-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:768px){
+      .about-grid{grid-template-columns:1fr}.about-photos{height:340px}
+      .temo-grid{grid-template-columns:1fr}.contact-grid{grid-template-columns:1fr}
+      .stats-inner{grid-template-columns:repeat(2,1fr)}.org-grid{grid-template-columns:1fr}
+      .lang-switcher{gap:.25rem}
+    }
+    @media(max-width:600px){
+      .circuits-grid{grid-template-columns:1fr}.services-grid{grid-template-columns:1fr}
+      .values-grid{grid-template-columns:1fr}.hero-ctas{flex-direction:column;align-items:flex-start}
+    }
+  </style>
+</head>
+<body>
+
+<nav id="nav"><div class="container nav-wrap"></div></nav>
+<div class="mobile-nav" id="mobileNav"></div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="container hero-body">
+    <div class="hero-eyebrow"></div>
+    <h1 class="hero-h1"></h1>
+    <p class="hero-sub"></p>
+    <div class="hero-ctas">
+      <a href="#contact" class="btn btn-gold hero-cta1"></a>
+      <a href="#circuits" class="btn btn-outline hero-cta2"></a>
+    </div>
+  </div>
+  <div class="scroll-hint"><span>↓</span><div class="scroll-hint-line"></div></div>
+  <div class="stats-strip">
+    <div class="container">
+      <div class="stats-inner">
+        <div class="stat"><div class="stat-n stat-n-1"></div><div class="stat-l stat-l-1"></div></div>
+        <div class="stat"><div class="stat-n stat-n-2"></div><div class="stat-l stat-l-2"></div></div>
+        <div class="stat"><div class="stat-n stat-n-3"></div><div class="stat-l stat-l-3"></div></div>
+        <div class="stat"><div class="stat-n stat-n-4"></div><div class="stat-l stat-l-4"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-photos reveal">
+        <div class="ap-main"><img src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=800&q=80" alt="Madagascar" loading="lazy" /></div>
+        <div class="ap-accent"><img src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=600&q=80" alt="Coucher de soleil" loading="lazy" /></div>
+        <div class="ap-badge"><b>10</b><span>ans</span></div>
+      </div>
+      <div class="about-text">
+        <div class="eyebrow reveal" data-t="about_tag"></div>
+        <h2 class="section-title reveal d1">
+          <span data-t="about_h2a"></span><br>
+          <span data-t="about_h2b"></span><br>
+          <span data-t="about_h2c"></span>
+        </h2>
+        <p class="reveal d2" data-t="about_p1"></p>
+        <p class="reveal d2" data-t="about_p2"></p>
+        <div class="founder-quote reveal d3">
+          <p data-t="about_quote"></p>
+          <cite data-t="about_cite"></cite>
+        </div>
+        <div class="lang-chips reveal d3">
+          <span class="lang-chip"><i class="fas fa-language"></i> Français</span>
+          <span class="lang-chip"><i class="fas fa-language"></i> English</span>
+          <span class="lang-chip"><i class="fas fa-language"></i> Malagasy</span>
+        </div>
+        <div class="values-grid reveal d4">
+          <div class="value-card"><div class="val-icon"><i class="fas fa-leaf"></i></div><div class="val-text"><b data-t="val1_title"></b><span data-t="val1_sub"></span></div></div>
+          <div class="value-card"><div class="val-icon"><i class="fas fa-shield-halved"></i></div><div class="val-text"><b data-t="val2_title"></b><span data-t="val2_sub"></span></div></div>
+          <div class="value-card"><div class="val-icon"><i class="fas fa-sliders"></i></div><div class="val-text"><b data-t="val3_title"></b><span data-t="val3_sub"></span></div></div>
+          <div class="value-card"><div class="val-icon"><i class="fas fa-heart"></i></div><div class="val-text"><b data-t="val4_title"></b><span data-t="val4_sub"></span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CIRCUITS -->
+<section id="circuits">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow reveal" id="circuits_tag"></div>
+      <h2 class="section-title reveal d1" id="circuits_h2"></h2>
+      <p class="section-lead reveal d2" id="circuits_sub"></p>
+    </div>
+    <div class="circuits-grid" id="circuitsGrid"></div>
+  </div>
+</section>
+
+<!-- GROUPED -->
+<section id="organised">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow reveal" id="grouped_tag"></div>
+      <h2 class="section-title reveal d1" id="grouped_h2"></h2>
+      <p class="section-lead reveal d2" id="grouped_sub"></p>
+    </div>
+    <div class="org-grid" id="groupedGrid"></div>
+    <div style="text-align:center;margin-top:2.5rem" class="reveal">
+      <p class="section-lead" id="grouped_also_p" style="margin-bottom:1.2rem"></p>
+      <a href="#contact" class="btn btn-outline" id="grouped_also_btn"></a>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow reveal" data-t="services_tag"></div>
+      <h2 class="section-title reveal d1" data-t="services_h2"></h2>
+      <p class="section-lead reveal d2" data-t="services_sub"></p>
+    </div>
+    <div class="services-grid">
+      <div class="svc reveal"><div class="svc-icon"><i class="fas fa-truck-monster"></i></div><h3 data-t="svc1_h"></h3><p data-t="svc1_p"></p></div>
+      <div class="svc reveal d1"><div class="svc-icon"><i class="fas fa-bed"></i></div><h3 data-t="svc2_h"></h3><p data-t="svc2_p"></p></div>
+      <div class="svc reveal d2"><div class="svc-icon"><i class="fas fa-language"></i></div><h3 data-t="svc3_h"></h3><p data-t="svc3_p"></p></div>
+      <div class="svc reveal d3"><div class="svc-icon"><i class="fas fa-route"></i></div><h3 data-t="svc4_h"></h3><p data-t="svc4_p"></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="temoignages">
+  <div class="container">
+    <div class="section-head">
+      <div class="eyebrow reveal" data-t="reviews_tag"></div>
+      <h2 class="section-title reveal d1" data-t="reviews_h2"></h2>
+    </div>
+    <div class="temo-grid" id="temoGrid"></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-band">
+  <div class="container">
+    <h2 class="reveal" data-t="cta_h2"></h2>
+    <p class="reveal d1" data-t="cta_sub"></p>
+    <a href="#contact" class="btn btn-gold reveal d2" data-t="cta_btn"></a>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-info">
+        <div class="eyebrow reveal" data-t="contact_tag"></div>
+        <h2 class="section-title reveal d1">
+          <span data-t="contact_h2a"></span><br><span data-t="contact_h2b"></span>
+        </h2>
+        <p class="section-lead reveal d2" data-t="contact_sub" style="margin-bottom:2rem"></p>
+        <div class="ci-row reveal d1">
+          <div class="ci-icon"><i class="fas fa-phone"></i></div>
+          <div><div class="ci-label">Téléphone / WhatsApp</div><div class="ci-val"><a class="ci-phone ci-phone-txt" href="tel:+33744980342">+33 7 44 98 03 42</a></div></div>
+        </div>
+        <div class="ci-row reveal d2">
+          <div class="ci-icon"><i class="fas fa-envelope"></i></div>
+          <div><div class="ci-label">Email</div><div class="ci-val"><a class="ci-email" href="mailto:contact@zenith-madagascar.com">contact@zenith-madagascar.com</a></div></div>
+        </div>
+        <div class="ci-row reveal d3">
+          <div class="ci-icon"><i class="fas fa-globe"></i></div>
+          <div><div class="ci-label">Langues</div><div class="ci-val">Français · English · Malagasy</div></div>
+        </div>
+      </div>
+      <div class="form-card reveal d2">
+        <h3 data-t="form_h3"></h3>
+        <p class="form-intro" data-t="form_intro"></p>
+        <div id="formBody">
+          <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST" id="devisForm">
+            <div class="f-row">
+              <div class="f-group"><label for="nom">Nom complet <span class="req-star">*</span></label><input type="text" id="nom" name="nom" required /></div>
+              <div class="f-group"><label for="email">Email <span class="req-star">*</span></label><input type="email" id="email" name="email" required /></div>
+            </div>
+            <div class="f-row">
+              <div class="f-group"><label for="tel">Téléphone</label><input type="tel" id="tel" name="tel" /></div>
+              <div class="f-group"><label for="voyageurs">Voyageurs <span class="req-star">*</span></label>
+                <select id="voyageurs" name="voyageurs" required>
+                  <option value=""></option>
+                  <option>1 personne</option><option>2 personnes</option>
+                  <option>3–4 personnes</option><option>5–8 personnes</option><option>Groupe 9+</option>
+                </select>
+              </div>
+            </div>
+            <div class="f-row">
+              <div class="f-group"><label for="depart">Date départ</label><input type="date" id="depart" name="depart" /></div>
+              <div class="f-group"><label for="duree">Durée</label>
+                <select id="duree" name="duree">
+                  <option value=""></option>
+                  <option>Moins de 7 jours</option><option>7–10 jours</option>
+                  <option>11–14 jours</option><option>15–21 jours</option><option>Plus de 21 jours</option>
+                </select>
+              </div>
+            </div>
+            <div class="f-group"><label for="circuit">Circuit</label>
+              <select id="circuit" name="circuit"><option value=""></option></select>
+            </div>
+            <div class="f-group">
+              <label>Contact préféré <span class="req-star">*</span></label>
+              <div class="contact-pref-group">
+                <input class="pref-option" type="radio" name="contact_pref" id="pref-email" value="Email" required />
+                <label class="pref-label" for="pref-email"><i class="fas fa-envelope"></i> Email</label>
+                <input class="pref-option" type="radio" name="contact_pref" id="pref-wa" value="WhatsApp" />
+                <label class="pref-label" for="pref-wa"><i class="fab fa-whatsapp"></i> WhatsApp</label>
+                <input class="pref-option" type="radio" name="contact_pref" id="pref-call" value="Appel" />
+                <label class="pref-label" for="pref-call"><i class="fas fa-phone"></i> Appel</label>
+              </div>
+            </div>
+            <div class="f-group"><label for="message">Message</label><textarea id="message" name="message"></textarea></div>
+            <button type="submit" class="btn btn-green f-submit"></button>
+          </form>
+        </div>
+        <div class="form-success" id="formOk">
+          <i class="fas fa-circle-check"></i>
+          <h4 data-t="f_success_h"></h4>
+          <p data-t="f_success_p"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer></footer>
+
+<script src="data.js"></script>
+<script src="engine.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  initIndex();
+  // Populate circuit select
+  const sel = document.getElementById('circuit');
+  const data = loadSiteData();
+  if (sel) {
+    sel.innerHTML = `<option value="">${getLang()==='fr'?'Sélectionner…':getLang()==='mg'?'Misafidy…':'Select…'}</option>` +
+      data.circuits.map(c => `<option>${tField(c,'name')}</option>`).join('') +
+      `<option>${getLang()==='fr'?'Voyage organisé (groupe)':getLang()==='mg'?'Dia amim-pikambana':'Group trip'}</option>` +
+      `<option>${getLang()==='fr'?'Circuit sur mesure':getLang()==='mg'?'Dian-tany manokana':'Custom tour'}</option>`;
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Circuit — Zenith Travel and Tours</title>
+  <link rel="icon" href="logo.jpg" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    .lang-switcher{display:flex;gap:.3rem;align-items:center}
+    .lang-btn{background:transparent;border:1.5px solid rgba(255,255,255,.25);color:rgba(255,255,255,.6);font-size:.68rem;font-weight:700;letter-spacing:.1em;padding:.28em .65em;border-radius:4px;cursor:pointer;transition:all .2s;font-family:var(--font-body)}
+    .lang-btn:hover{border-color:var(--gold);color:var(--gold)}
+    .lang-btn.active{background:var(--gold);border-color:var(--gold);color:var(--darker)}
+    /* Hero */
+    .c-hero{position:relative;height:clamp(420px,65vw,640px);display:flex;align-items:flex-end;overflow:hidden}
+    .c-hero-bg{position:absolute;inset:0;background-size:cover;background-position:center}
+    .c-hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,22,.92) 0%,rgba(10,10,22,.35) 55%,rgba(10,10,22,.2) 100%)}
+    .c-hero-body{position:relative;z-index:2;padding:0 0 3rem;width:100%}
+    .c-hero-eyebrow{font-size:.68rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:.6rem;display:block}
+    .c-hero-h1{font-family:var(--font-title);font-size:clamp(2.2rem,6vw,4.5rem);font-weight:900;line-height:1.08;margin-bottom:1.2rem}
+    .c-chips{display:flex;flex-wrap:wrap;gap:.7rem}
+    .chip{display:inline-flex;align-items:center;gap:.4em;background:rgba(255,255,255,.1);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.18);border-radius:50px;font-size:.77rem;font-weight:500;padding:.35em .95em}
+    .chip i{color:var(--gold)}
+    .back-nav{position:absolute;top:calc(70px + 1.2rem);left:0;right:0;z-index:5}
+    .back-btn{display:inline-flex;align-items:center;gap:.5em;font-size:.77rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.75);background:rgba(10,10,22,.55);backdrop-filter:blur(8px);padding:.5em 1em;border-radius:50px;border:1px solid rgba(255,255,255,.15);transition:all .22s}
+    .back-btn:hover{color:var(--white);border-color:rgba(255,255,255,.35)}
+    /* Breadcrumb */
+    .breadcrumb{padding:.8rem 0;font-size:.78rem;color:var(--gray);display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+    .breadcrumb a{color:var(--gray);transition:color .2s}
+    .breadcrumb a:hover{color:var(--white)}
+    .breadcrumb i{font-size:.6rem}
+    /* Layout */
+    .c-layout{display:grid;grid-template-columns:1fr 360px;gap:2.5rem;padding:4rem 0 5rem;align-items:start}
+    .c-main h2{font-family:var(--font-title);font-size:clamp(1.5rem,3vw,2.1rem);font-weight:700;margin:2.4rem 0 1rem;color:var(--white)}
+    .c-main h2:first-child{margin-top:0}
+    .c-main p{font-family:var(--font-serif);font-size:clamp(.93rem,1.5vw,1.04rem);color:rgba(255,255,255,.72);line-height:1.78;margin-bottom:1rem}
+    .c-gallery{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:200px 200px;gap:.7rem;margin:2rem 0;border-radius:var(--r);overflow:hidden}
+    .c-gallery .g0{grid-row:1/3}
+    .c-gallery div{overflow:hidden}
+    .c-gallery div img{transition:transform .5s ease}
+    .c-gallery div:hover img{transform:scale(1.06)}
+    .itinerary{margin:.5rem 0}
+    .day{display:flex;gap:1.2rem;margin-bottom:1.2rem;padding-bottom:1.2rem;border-bottom:1px solid var(--border-w)}
+    .day:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+    .day-num{flex-shrink:0;width:40px;height:40px;border-radius:50%;background:rgba(245,166,35,.12);border:1.5px solid var(--border);display:grid;place-items:center;font-family:var(--font-title);font-size:.85rem;font-weight:700;color:var(--gold)}
+    .day-content b{display:block;font-size:.9rem;font-weight:600;margin-bottom:.25rem}
+    .day-content span{font-size:.83rem;color:rgba(255,255,255,.6);line-height:1.55}
+    .incl-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;margin:.5rem 0}
+    .incl-box{background:rgba(255,255,255,.04);border:1px solid var(--border-w);border-radius:var(--r-sm);padding:1.2rem}
+    .incl-box h4{font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.8rem}
+    .incl-yes h4{color:var(--green)}
+    .incl-no h4{color:#e05555}
+    .incl-box li{list-style:none;font-size:.83rem;color:rgba(255,255,255,.68);padding:.3rem 0;display:flex;align-items:flex-start;gap:.5rem}
+    .incl-box li i{font-size:.75rem;flex-shrink:0;margin-top:.2rem}
+    .incl-yes li i{color:var(--green)}
+    .incl-no li i{color:#e05555}
+    /* Sidebar */
+    .c-sidebar{position:sticky;top:90px}
+    .price-card{background:var(--mid);border:1px solid var(--border-w);border-radius:var(--r);overflow:hidden}
+    .price-card-top{background:linear-gradient(135deg,var(--green),#1f6a24);padding:1.5rem;text-align:center}
+    .price-card-top .from{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;opacity:.75}
+    .price-card-top .big{font-family:var(--font-title);font-size:3rem;font-weight:900;line-height:1;margin:.2rem 0 .1rem}
+    .price-card-top .per-p{font-size:.78rem;opacity:.8}
+    .price-card-body{padding:1.4rem}
+    .pcb-row{display:flex;align-items:center;justify-content:space-between;padding:.55rem 0;border-bottom:1px solid var(--border-w);font-size:.85rem}
+    .pcb-row:last-of-type{border-bottom:none}
+    .pcb-row span:first-child{color:var(--gray)}
+    .pcb-row span:last-child{font-weight:600}
+    .whatsapp-btn{display:flex;align-items:center;justify-content:center;gap:.5em;width:100%;padding:.8em;margin-top:.6rem;background:#25D366;color:white;border:none;border-radius:50px;font-family:var(--font-body);font-size:.78rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .22s,transform .22s;text-decoration:none}
+    .whatsapp-btn:hover{background:#1db954;transform:translateY(-2px)}
+    .sidebar-note{font-size:.73rem;color:var(--gray);text-align:center;margin-top:.8rem;line-height:1.5}
+    /* Others section */
+    .others-section{background:var(--darker);padding:4rem 0}
+    @media(max-width:900px){.c-layout{grid-template-columns:1fr}.c-sidebar{position:static}.c-gallery{grid-template-columns:1fr 1fr;grid-template-rows:180px 180px}.c-gallery .g0{grid-row:auto;grid-column:1/3}.incl-grid{grid-template-columns:1fr}}
+    @media(max-width:600px){.c-gallery{grid-template-columns:1fr;grid-template-rows:unset}.c-gallery div{height:200px}.c-gallery .g0{grid-column:auto}}
+  </style>
+</head>
+<body>
+
+<nav id="nav"><div class="container nav-wrap"></div></nav>
+<div class="mobile-nav" id="mobileNav"></div>
+
+<section class="c-hero">
+  <div class="c-hero-bg"></div>
+  <div class="c-hero-overlay"></div>
+  <div class="back-nav">
+    <div class="container">
+      <a href="index.html#circuits" class="back-btn"><i class="fas fa-arrow-left"></i> <span data-t="back_circuits"></span></a>
+    </div>
+  </div>
+  <div class="container c-hero-body">
+    <span class="c-hero-eyebrow"></span>
+    <h1 class="c-hero-h1"></h1>
+    <div class="c-chips"></div>
+  </div>
+</section>
+
+<div style="background:var(--darker);border-bottom:1px solid var(--border-w)">
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="index.html">Zenith</a>
+      <i class="fas fa-chevron-right"></i>
+      <a href="index.html#circuits" data-t="nav_circuits"></a>
+      <i class="fas fa-chevron-right"></i>
+      <span style="color:var(--white)" class="c-breadcrumb-name"></span>
+    </nav>
+  </div>
+</div>
+
+<div style="background:var(--dark)">
+  <div class="container">
+    <div class="c-layout">
+      <div class="c-main">
+        <h2 class="c-intro-h"></h2>
+        <p class="c-intro-p1"></p>
+        <div class="c-gallery"></div>
+        <h2 data-t="programme_h2" id="programme_h2">Programme</h2>
+        <div class="itinerary"></div>
+        <h2 data-t="incl_h2" id="incl_h2">Inclus / Non inclus</h2>
+        <div class="incl-grid">
+          <div class="incl-box incl-yes"><h4></h4><ul></ul></div>
+          <div class="incl-box incl-no"><h4></h4><ul></ul></div>
+        </div>
+      </div>
+      <aside class="c-sidebar">
+        <div class="price-card">
+          <div class="price-card-top">
+            <div class="from" id="price_from_label"></div>
+            <div class="big"></div>
+            <div class="per-p"></div>
+          </div>
+          <div class="price-card-body">
+            <div class="pcb-row"><span></span><span></span></div>
+            <div class="pcb-row"><span></span><span></span></div>
+            <div class="pcb-row"><span></span><span></span></div>
+            <div class="pcb-row"><span></span><span></span></div>
+            <div class="pcb-row"><span></span><span></span></div>
+            <a href="index.html#contact" class="btn btn-gold sidebar-devis-btn" style="width:100%;justify-content:center;margin-top:1.2rem"></a>
+            <a href="#" class="whatsapp-btn"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+            <p class="sidebar-note" id="sidebar_note"></p>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<div class="others-section">
+  <div class="container">
+    <div class="eyebrow" data-t="discover_also" style="display:block;text-align:center;margin-bottom:.6rem"></div>
+    <h2 style="font-family:var(--font-title);font-size:clamp(1.4rem,3vw,2rem);font-weight:700;text-align:center;margin-bottom:2rem" data-t="other_circuits"></h2>
+    <div style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center" id="othersGrid"></div>
+  </div>
+</div>
+
+<footer></footer>
+
+<script src="data.js"></script>
+<script src="engine.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  initCircuitPage();
+  // Sidebar note
+  const note = document.getElementById('sidebar_note');
+  if (note) note.innerHTML = getLang()==='fr' ? 'Devis gratuit · Sans engagement<br>Réponse sous 24h' : getLang()==='mg' ? 'Maimaimpoana · Tsy voafehy<br>Valiny ao anatin\'ny 24h' : 'Free quote · No obligation<br>Reply within 24h';
+  const pfLabel = document.getElementById('price_from_label');
+  if (pfLabel) pfLabel.textContent = t('from_label');
+  // Programme heading
+  const ph = document.getElementById('programme_h2');
+  if (ph) ph.textContent = getLang()==='fr' ? 'Programme jour par jour' : getLang()==='mg' ? 'Programa isan\'andro' : 'Day by day programme';
+  const ih = document.getElementById('incl_h2');
+  if (ih) ih.textContent = getLang()==='fr' ? 'Ce qui est inclus' : getLang()==='mg' ? 'Izay aniana' : "What's included";
+});
+</script>
+</body>
+</html>

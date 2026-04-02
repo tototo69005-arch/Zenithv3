@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Zenith Travel and Tours</title>
+  <link rel="icon" href="logo.jpg" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    :root {
+      --green:#3CB043; --gold:#F5A623; --dark:#1A1A2E; --darker:#0f0f1e;
+      --mid:#242438; --mid2:#2e2e48; --white:#fff; --gray:#8888a8; --gray-l:#b0b0c8;
+      --border:rgba(245,166,35,.18); --border-w:rgba(255,255,255,.08);
+      --r:12px; --r-sm:8px; --error:#e05555;
+    }
+    html { font-size:15px; }
+    body { background:var(--darker); color:var(--white); font-family:'Segoe UI',system-ui,sans-serif; font-weight:300; line-height:1.6; }
+    img { display:block; max-width:100%; }
+    a { color:var(--gold); }
+    button, input, select, textarea { font-family:inherit; }
+
+    /* Login screen */
+    #loginScreen {
+      position:fixed; inset:0; background:var(--darker); display:flex; align-items:center; justify-content:center; z-index:999;
+    }
+    .login-box { background:var(--mid); border:1px solid var(--border-w); border-radius:var(--r); padding:3rem 2.5rem; width:min(420px,90vw); text-align:center; }
+    .login-logo { width:80px; height:80px; object-fit:contain; margin:0 auto 1.5rem; }
+    .login-box h1 { font-size:1.4rem; font-weight:700; margin-bottom:.4rem; }
+    .login-box p { font-size:.85rem; color:var(--gray); margin-bottom:2rem; }
+    .login-field { margin-bottom:1rem; text-align:left; }
+    .login-field label { display:block; font-size:.75rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--gray-l); margin-bottom:.4rem; }
+    .login-field input { width:100%; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.15); border-radius:var(--r-sm); color:var(--white); font-size:.95rem; padding:.75em 1em; outline:none; transition:border-color .2s; }
+    .login-field input:focus { border-color:var(--gold); }
+    .login-btn { width:100%; background:var(--gold); color:var(--darker); border:none; border-radius:50px; padding:.9em; font-size:.85rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; margin-top:.5rem; transition:background .2s; }
+    .login-btn:hover { background:#fdb93a; }
+    .login-error { color:var(--error); font-size:.82rem; margin-top:.7rem; display:none; }
+
+    /* Admin layout */
+    #adminApp { display:none; min-height:100vh; }
+    .admin-header {
+      position:sticky; top:0; z-index:100;
+      background:rgba(12,12,24,.96); backdrop-filter:blur(14px);
+      border-bottom:1px solid var(--border-w); padding:.8rem 1.5rem;
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .admin-brand { display:flex; align-items:center; gap:.7rem; }
+    .admin-brand img { height:36px; object-fit:contain; mix-blend-mode:screen; filter:brightness(1.1); }
+    .admin-brand span { font-size:1rem; font-weight:700; color:var(--gold); }
+    .admin-brand small { font-size:.65rem; font-weight:600; letter-spacing:.15em; text-transform:uppercase; color:var(--gray); display:block; }
+    .header-actions { display:flex; align-items:center; gap:.8rem; }
+    .btn { display:inline-flex; align-items:center; gap:.4em; padding:.6em 1.2em; border-radius:50px; border:none; font-size:.75rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; transition:all .22s; }
+    .btn-gold { background:var(--gold); color:var(--darker); }
+    .btn-gold:hover { background:#fdb93a; }
+    .btn-green { background:var(--green); color:#fff; }
+    .btn-green:hover { background:#2e8a35; }
+    .btn-red { background:var(--error); color:#fff; }
+    .btn-red:hover { background:#c04040; }
+    .btn-ghost { background:transparent; color:var(--gray); border:1px solid var(--border-w); }
+    .btn-ghost:hover { color:var(--white); border-color:rgba(255,255,255,.3); }
+    .btn-sm { padding:.45em .9em; font-size:.7rem; }
+
+    /* Sidebar tabs */
+    .admin-body { display:grid; grid-template-columns:220px 1fr; min-height:calc(100vh - 56px); }
+    .admin-sidebar { background:var(--mid); border-right:1px solid var(--border-w); padding:1.5rem 0; }
+    .admin-tab {
+      display:flex; align-items:center; gap:.7rem; padding:.75rem 1.5rem;
+      font-size:.82rem; font-weight:500; color:var(--gray-l); cursor:pointer;
+      transition:all .2s; border-left:3px solid transparent;
+    }
+    .admin-tab:hover { color:var(--white); background:rgba(255,255,255,.04); }
+    .admin-tab.active { color:var(--gold); border-left-color:var(--gold); background:rgba(245,166,35,.07); }
+    .admin-tab i { width:18px; text-align:center; }
+    .admin-sep { border-top:1px solid var(--border-w); margin:.7rem 1.5rem; }
+
+    /* Panels */
+    .admin-content { padding:2rem; overflow-y:auto; }
+    .panel { display:none; }
+    .panel.active { display:block; }
+    .panel-title { font-size:1.3rem; font-weight:700; margin-bottom:.3rem; }
+    .panel-sub { font-size:.83rem; color:var(--gray); margin-bottom:2rem; }
+
+    /* Cards grid */
+    .cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:1.2rem; }
+    .admin-card { background:var(--mid); border:1px solid var(--border-w); border-radius:var(--r); overflow:hidden; transition:border-color .2s; }
+    .admin-card:hover { border-color:rgba(245,166,35,.3); }
+    .admin-card-img { height:140px; position:relative; overflow:hidden; }
+    .admin-card-img img { width:100%; height:100%; object-fit:cover; }
+    .admin-card-body { padding:1rem 1.1rem 1.2rem; }
+    .admin-card-name { font-size:.95rem; font-weight:700; margin-bottom:.25rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .admin-card-meta { font-size:.75rem; color:var(--gray); margin-bottom:.9rem; display:flex; gap:.8rem; flex-wrap:wrap; }
+    .admin-card-meta span { display:flex; align-items:center; gap:.3em; }
+    .admin-card-actions { display:flex; gap:.5rem; }
+
+    /* Modal */
+    .modal-overlay {
+      position:fixed; inset:0; background:rgba(0,0,0,.7); backdrop-filter:blur(4px);
+      z-index:500; display:flex; align-items:flex-start; justify-content:center;
+      overflow-y:auto; padding:2rem 1rem;
+    }
+    .modal { background:var(--mid); border:1px solid var(--border-w); border-radius:var(--r); width:min(760px,100%); margin:auto; }
+    .modal-header { display:flex; align-items:center; justify-content:space-between; padding:1.3rem 1.6rem; border-bottom:1px solid var(--border-w); }
+    .modal-header h2 { font-size:1.1rem; font-weight:700; }
+    .modal-close { background:none; border:none; color:var(--gray); font-size:1.2rem; cursor:pointer; transition:color .2s; }
+    .modal-close:hover { color:var(--white); }
+    .modal-body { padding:1.6rem; max-height:75vh; overflow-y:auto; }
+    .modal-footer { padding:1rem 1.6rem; border-top:1px solid var(--border-w); display:flex; justify-content:flex-end; gap:.7rem; }
+
+    /* Form fields */
+    .f-group { margin-bottom:1.1rem; }
+    .f-group label { display:block; font-size:.72rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--gray-l); margin-bottom:.38rem; }
+    .f-group input, .f-group select, .f-group textarea {
+      width:100%; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14);
+      border-radius:var(--r-sm); color:var(--white); font-size:.9rem; padding:.7em .9em;
+      outline:none; transition:border-color .22s; appearance:none;
+    }
+    .f-group input:focus, .f-group select:focus, .f-group textarea:focus { border-color:var(--gold); background:rgba(255,255,255,.1); }
+    .f-group select option { background:var(--mid); }
+    .f-group textarea { resize:vertical; min-height:80px; }
+    .f-group small { font-size:.72rem; color:var(--gray); margin-top:.3rem; display:block; }
+    .f-row2 { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .f-row3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; }
+    .section-divider { font-size:.7rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); padding:.6rem 0 .4rem; border-bottom:1px solid var(--border); margin:.5rem 0 1.2rem; }
+
+    /* Image preview */
+    .img-preview { width:100%; height:120px; border-radius:var(--r-sm); overflow:hidden; margin-top:.5rem; background:rgba(255,255,255,.04); border:1px dashed rgba(255,255,255,.15); }
+    .img-preview img { width:100%; height:100%; object-fit:cover; }
+
+    /* Days builder */
+    .days-list { display:flex; flex-direction:column; gap:.7rem; }
+    .day-item { display:grid; grid-template-columns:70px 1fr 1fr auto; gap:.6rem; align-items:start; background:rgba(255,255,255,.04); border:1px solid var(--border-w); border-radius:var(--r-sm); padding:.8rem; }
+    .day-item input { background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:6px; color:var(--white); font-size:.82rem; padding:.5em .7em; outline:none; }
+    .day-item input:focus { border-color:var(--gold); }
+    .day-remove { background:none; border:none; color:var(--error); cursor:pointer; padding:.3em; font-size:.9rem; align-self:center; }
+
+    /* Gallery builder */
+    .gallery-list { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:.7rem; }
+    .gallery-item { position:relative; background:rgba(255,255,255,.04); border:1px solid var(--border-w); border-radius:var(--r-sm); overflow:hidden; }
+    .gallery-item img { width:100%; height:100px; object-fit:cover; display:block; }
+    .gallery-item input { width:100%; background:rgba(0,0,0,.6); border:none; color:var(--white); font-size:.7rem; padding:.4em .5em; outline:none; }
+    .gallery-rm { position:absolute; top:.3rem; right:.3rem; background:var(--error); color:#fff; border:none; border-radius:50%; width:20px; height:20px; font-size:.65rem; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+
+    /* Places bar */
+    .bar-preview { height:8px; background:rgba(255,255,255,.1); border-radius:50px; overflow:hidden; margin-top:.4rem; }
+    .bar-fill-preview { height:100%; background:linear-gradient(90deg,var(--green),var(--gold)); border-radius:50px; transition:width .4s; }
+
+    /* Toast */
+    #toast { position:fixed; bottom:2rem; right:2rem; background:var(--green); color:#fff; padding:.8em 1.5em; border-radius:50px; font-size:.83rem; font-weight:600; transform:translateY(80px); opacity:0; transition:all .3s; z-index:9999; }
+    #toast.show { transform:translateY(0); opacity:1; }
+    #toast.error { background:var(--error); }
+
+    /* Danger zone */
+    .danger-zone { background:rgba(224,85,85,.06); border:1px solid rgba(224,85,85,.25); border-radius:var(--r); padding:1.5rem; margin-top:2rem; }
+    .danger-zone h3 { color:var(--error); font-size:.9rem; margin-bottom:.6rem; }
+    .danger-zone p { font-size:.82rem; color:var(--gray); margin-bottom:1rem; }
+
+    /* Preview badge */
+    .preview-badge { display:inline-flex; align-items:center; gap:.4em; background:rgba(60,176,67,.15); border:1px solid rgba(60,176,67,.3); color:var(--green); font-size:.68rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; padding:.25em .7em; border-radius:4px; }
+
+    @media(max-width:768px){
+      .admin-body{grid-template-columns:1fr}
+      .admin-sidebar{display:flex;flex-wrap:wrap;padding:.5rem;border-right:none;border-bottom:1px solid var(--border-w)}
+      .admin-tab{padding:.5rem .8rem;border-left:none;border-bottom:3px solid transparent;font-size:.75rem}
+      .admin-tab.active{border-left-color:transparent;border-bottom-color:var(--gold)}
+      .f-row2,.f-row3{grid-template-columns:1fr}
+      .day-item{grid-template-columns:60px 1fr auto}
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <img src="logo.jpg" alt="Zenith" class="login-logo" />
+    <h1>Espace Administrateur</h1>
+    <p>Zenith Travel and Tours — accès réservé</p>
+    <div class="login-field">
+      <label>Mot de passe</label>
+      <input type="password" id="pwdInput" placeholder="••••••••" />
+    </div>
+    <button class="login-btn" onclick="attemptLogin()"><i class="fas fa-unlock"></i> Connexion</button>
+    <p class="login-error" id="loginError"><i class="fas fa-exclamation-triangle"></i> Mot de passe incorrect</p>
+    <p style="font-size:.72rem;color:var(--gray);margin-top:1.5rem">
+      Mot de passe par défaut : <code style="color:var(--gold)">zenith2026</code><br>
+      <a href="#" onclick="changePassword()" style="color:var(--gray);font-size:.7rem">Changer le mot de passe</a>
+    </p>
+  </div>
+</div>
+
+<!-- ADMIN APP -->
+<div id="adminApp">
+  <header class="admin-header">
+    <div class="admin-brand">
+      <img src="logo.jpg" alt="Zenith" />
+      <div>
+        <span>Zenith Admin</span>
+        <small>Travel and Tours</small>
+      </div>
+    </div>
+    <div class="header-actions">
+      <a href="index.html" target="_blank" class="btn btn-ghost btn-sm"><i class="fas fa-eye"></i> Voir le site</a>
+      <button class="btn btn-green btn-sm" onclick="saveAll()"><i class="fas fa-save"></i> Sauvegarder</button>
+      <button class="btn btn-ghost btn-sm" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Déconnexion</button>
+    </div>
+  </header>
+
+  <div class="admin-body">
+    <!-- Sidebar -->
+    <nav class="admin-sidebar">
+      <div class="admin-tab active" data-panel="circuits" onclick="switchPanel('circuits',this)">
+        <i class="fas fa-route"></i> Circuits
+      </div>
+      <div class="admin-tab" data-panel="grouped" onclick="switchPanel('grouped',this)">
+        <i class="fas fa-users"></i> Voyages groupes
+      </div>
+      <div class="admin-sep"></div>
+      <div class="admin-tab" data-panel="meta" onclick="switchPanel('meta',this)">
+        <i class="fas fa-cog"></i> Paramètres site
+      </div>
+      <div class="admin-tab" data-panel="testimonials" onclick="switchPanel('testimonials',this)">
+        <i class="fas fa-star"></i> Témoignages
+      </div>
+      <div class="admin-sep"></div>
+      <div class="admin-tab" data-panel="help" onclick="switchPanel('help',this)">
+        <i class="fas fa-question-circle"></i> Aide
+      </div>
+    </nav>
+
+    <!-- Content -->
+    <main class="admin-content">
+
+      <!-- CIRCUITS PANEL -->
+      <div class="panel active" id="panel-circuits">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
+          <div>
+            <h1 class="panel-title">Circuits sur mesure</h1>
+            <p class="panel-sub">Modifiez, créez ou supprimez des circuits. Les changements s'appliquent instantanément sur le site.</p>
+          </div>
+          <button class="btn btn-gold" onclick="openCircuitModal(null)"><i class="fas fa-plus"></i> Nouveau circuit</button>
+        </div>
+        <div class="cards-grid" id="circuitsAdminGrid"></div>
+      </div>
+
+      <!-- GROUPED PANEL -->
+      <div class="panel" id="panel-grouped">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
+          <div>
+            <h1 class="panel-title">Voyages organisés</h1>
+            <p class="panel-sub">Gérez les voyages à dates fixes : dates, places, prix, images.</p>
+          </div>
+          <button class="btn btn-gold" onclick="openGroupedModal(null)"><i class="fas fa-plus"></i> Nouveau voyage</button>
+        </div>
+        <div class="cards-grid" id="groupedAdminGrid"></div>
+      </div>
+
+      <!-- META PANEL -->
+      <div class="panel" id="panel-meta">
+        <h1 class="panel-title">Paramètres du site</h1>
+        <p class="panel-sub">Coordonnées de contact, réseaux sociaux.</p>
+        <div style="max-width:560px">
+          <div class="f-row2">
+            <div class="f-group"><label>Téléphone / WhatsApp</label><input type="tel" id="meta_phone" /><small>Format : +33 7 44 98 03 42</small></div>
+            <div class="f-group"><label>Numéro WhatsApp (sans +)</label><input type="text" id="meta_wa" /><small>Ex : 33744980342</small></div>
+          </div>
+          <div class="f-group"><label>Email</label><input type="email" id="meta_email" /></div>
+          <div class="f-row2">
+            <div class="f-group"><label>Instagram (URL)</label><input type="url" id="meta_ig" /></div>
+            <div class="f-group"><label>Facebook (URL)</label><input type="url" id="meta_fb" /></div>
+          </div>
+          <div class="f-group"><label>TripAdvisor (URL)</label><input type="url" id="meta_ta" /></div>
+          <div class="f-group"><label>Formspree Form ID</label><input type="text" id="meta_formspree" placeholder="xyzabcde" /><small>Remplace YOUR_FORM_ID dans le formulaire de contact. Créez votre form sur <a href="https://formspree.io" target="_blank">formspree.io</a></small></div>
+          <button class="btn btn-green" onclick="saveMeta()"><i class="fas fa-save"></i> Sauvegarder les paramètres</button>
+        </div>
+      </div>
+
+      <!-- TESTIMONIALS PANEL -->
+      <div class="panel" id="panel-testimonials">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">
+          <div>
+            <h1 class="panel-title">Témoignages</h1>
+            <p class="panel-sub">Modifiez les avis clients affichés sur la page d'accueil.</p>
+          </div>
+          <button class="btn btn-gold" onclick="openTestimonialModal(null)"><i class="fas fa-plus"></i> Ajouter un avis</button>
+        </div>
+        <div class="cards-grid" id="temoAdminGrid"></div>
+      </div>
+
+      <!-- HELP PANEL -->
+      <div class="panel" id="panel-help">
+        <h1 class="panel-title">Guide d'utilisation</h1>
+        <p class="panel-sub">Comment utiliser le panneau d'administration Zenith.</p>
+        <div style="max-width:680px;display:flex;flex-direction:column;gap:1.4rem">
+          <div style="background:var(--mid);border:1px solid var(--border-w);border-radius:var(--r);padding:1.4rem">
+            <h3 style="color:var(--gold);font-size:.9rem;margin-bottom:.6rem"><i class="fas fa-route"></i> Circuits sur mesure</h3>
+            <p style="font-size:.83rem;color:var(--gray-l);line-height:1.7">Cliquez sur <strong>Modifier</strong> pour ouvrir le formulaire d'un circuit. Vous pouvez changer : nom (FR/EN/MG), description, prix, durée, images (URL Unsplash ou votre propre hébergement), programme jour par jour, inclus/exclus. Cliquez <strong>Nouveau circuit</strong> pour en créer un. <strong>Supprimer</strong> est irréversible (jusqu'au prochain reset).</p>
+          </div>
+          <div style="background:var(--mid);border:1px solid var(--border-w);border-radius:var(--r);padding:1.4rem">
+            <h3 style="color:var(--gold);font-size:.9rem;margin-bottom:.6rem"><i class="fas fa-users"></i> Voyages organisés</h3>
+            <p style="font-size:.83rem;color:var(--gray-l);line-height:1.7">Gérez les voyages à dates fixes. Le champ <strong>Places prises</strong> met à jour automatiquement la barre de progression et l'alerte rouge (≤ 3 places restantes). Quand un voyage est complet, mettez "places prises = places max" — le bouton Réserver affiche "Complet".</p>
+          </div>
+          <div style="background:var(--mid);border:1px solid var(--border-w);border-radius:var(--r);padding:1.4rem">
+            <h3 style="color:var(--gold);font-size:.9rem;margin-bottom:.6rem"><i class="fas fa-images"></i> Photos</h3>
+            <p style="font-size:.83rem;color:var(--gray-l);line-height:1.7">Utilisez des URLs d'images directes. Pour Unsplash : <code style="background:rgba(255,255,255,.08);padding:.1em .4em;border-radius:4px">https://images.unsplash.com/photo-XXXX?w=700&q=80</code>. Pour vos propres photos : hébergez-les sur <a href="https://imgbb.com" target="_blank">imgbb.com</a> (gratuit) et copiez l'URL directe.</p>
+          </div>
+          <div style="background:var(--mid);border:1px solid var(--border-w);border-radius:var(--r);padding:1.4rem">
+            <h3 style="color:var(--gold);font-size:.9rem;margin-bottom:.6rem"><i class="fas fa-save"></i> Sauvegarde</h3>
+            <p style="font-size:.83rem;color:var(--gray-l);line-height:1.7">Toutes les modifications sont sauvegardées dans le <strong>localStorage du navigateur</strong> — elles persistent sur votre appareil. Pour partager les modifications sur un autre appareil ou les sauvegarder définitivement, exportez les données (bouton ci-dessous) et partagez le fichier JSON à intégrer dans data.js.</p>
+            <div style="display:flex;gap:.7rem;margin-top:1rem;flex-wrap:wrap">
+              <button class="btn btn-ghost btn-sm" onclick="exportData()"><i class="fas fa-download"></i> Exporter data.json</button>
+              <button class="btn btn-ghost btn-sm" onclick="importDataPrompt()"><i class="fas fa-upload"></i> Importer JSON</button>
+            </div>
+          </div>
+          <div class="danger-zone">
+            <h3><i class="fas fa-exclamation-triangle"></i> Zone dangereuse</h3>
+            <p>Réinitialise toutes les données aux valeurs d'origine (data.js). Irréversible.</p>
+            <button class="btn btn-red btn-sm" onclick="confirmReset()"><i class="fas fa-undo"></i> Réinitialiser toutes les données</button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- CIRCUIT MODAL -->
+<div class="modal-overlay" id="circuitModal" style="display:none" onclick="closeIfOverlay(event,'circuitModal')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h2 id="circuitModalTitle">Circuit</h2>
+      <button class="modal-close" onclick="closeModal('circuitModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" id="circuitModalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('circuitModal')">Annuler</button>
+      <button class="btn btn-green" onclick="saveCircuit()"><i class="fas fa-save"></i> Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- GROUPED MODAL -->
+<div class="modal-overlay" id="groupedModal" style="display:none" onclick="closeIfOverlay(event,'groupedModal')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h2 id="groupedModalTitle">Voyage organisé</h2>
+      <button class="modal-close" onclick="closeModal('groupedModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" id="groupedModalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('groupedModal')">Annuler</button>
+      <button class="btn btn-green" onclick="saveGrouped()"><i class="fas fa-save"></i> Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- TESTIMONIAL MODAL -->
+<div class="modal-overlay" id="temoModal" style="display:none" onclick="closeIfOverlay(event,'temoModal')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Témoignage</h2>
+      <button class="modal-close" onclick="closeModal('temoModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" id="temoModalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('temoModal')">Annuler</button>
+      <button class="btn btn-green" onclick="saveTestimonial()"><i class="fas fa-save"></i> Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script src="data.js"></script>
+<script>
+/* ================================================================
+   ADMIN JS
+================================================================ */
+const ADMIN_PWD_KEY = 'zenith_admin_pwd';
+const ADMIN_AUTH_KEY = 'zenith_admin_auth';
+const DEFAULT_PWD = 'zenith2026';
+
+let siteData = null;
+let editingCircuitIndex = null;
+let editingGroupedIndex = null;
+let editingTemoIndex = null;
+
+/* ---- AUTH ---- */
+function attemptLogin() {
+  const pwd = document.getElementById('pwdInput').value;
+  const stored = localStorage.getItem(ADMIN_PWD_KEY) || DEFAULT_PWD;
+  if (pwd === stored) {
+    localStorage.setItem(ADMIN_AUTH_KEY, '1');
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminApp').style.display = 'block';
+    initAdmin();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+document.getElementById('pwdInput').addEventListener('keydown', e => { if (e.key === 'Enter') attemptLogin(); });
+
+function logout() {
+  localStorage.removeItem(ADMIN_AUTH_KEY);
+  window.location.reload();
+}
+
+function changePassword() {
+  const np = prompt('Nouveau mot de passe (min. 6 caractères) :');
+  if (np && np.length >= 6) {
+    localStorage.setItem(ADMIN_PWD_KEY, np);
+    toast('Mot de passe modifié !');
+  } else if (np) {
+    toast('Trop court (min. 6 caractères)', true);
+  }
+}
+
+// Check if already logged in
+if (localStorage.getItem(ADMIN_AUTH_KEY) === '1') {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminApp').style.display = 'block';
+  window.addEventListener('DOMContentLoaded', initAdmin);
+}
+
+/* ---- INIT ---- */
+function initAdmin() {
+  siteData = loadSiteData();
+  renderCircuitsAdmin();
+  renderGroupedAdmin();
+  renderTestimonialsAdmin();
+  loadMeta();
+}
+
+/* ---- PANELS ---- */
+function switchPanel(id, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  el.classList.add('active');
+}
+
+/* ---- TOAST ---- */
+function toast(msg, isError) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show' + (isError ? ' error' : '');
+  setTimeout(() => t.className = '', 2800);
+}
+
+/* ---- SAVE ALL ---- */
+function saveAll() {
+  saveSiteData(siteData);
+  toast('✓ Données sauvegardées !');
+}
+
+/* ================================================================
+   CIRCUITS ADMIN
+================================================================ */
+function renderCircuitsAdmin() {
+  const grid = document.getElementById('circuitsAdminGrid');
+  grid.innerHTML = siteData.circuits.map((c, i) => `
+    <div class="admin-card">
+      <div class="admin-card-img">
+        <img src="${c.image}" alt="${c.name_fr}" onerror="this.src='https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=300&q=60'" />
+      </div>
+      <div class="admin-card-body">
+        <div class="admin-card-name">${c.name_fr}</div>
+        <div class="admin-card-meta">
+          <span><i class="fas fa-clock"></i> ${c.duration_days} jours</span>
+          <span><i class="fas fa-euro-sign"></i> ${c.price} €</span>
+          <span><i class="fas fa-map-pin"></i> ${c.location_fr}</span>
+        </div>
+        <div class="admin-card-actions">
+          <button class="btn btn-gold btn-sm" onclick="openCircuitModal(${i})"><i class="fas fa-edit"></i> Modifier</button>
+          <button class="btn btn-red btn-sm" onclick="deleteCircuit(${i})"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function openCircuitModal(idx) {
+  editingCircuitIndex = idx;
+  const isNew = idx === null;
+  const c = isNew ? {
+    id: 'circuit-' + Date.now(),
+    slug: 'circuit-new',
+    pill_fr:'Nouveau', pill_en:'New', pill_mg:'Vaovao',
+    duration_days:7, location_fr:'Madagascar', location_en:'Madagascar', location_mg:'Madagasikara',
+    price:900,
+    image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=700&q=80',
+    hero_image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1800&q=80',
+    name_fr:'', name_en:'', name_mg:'',
+    desc_fr:'', desc_en:'', desc_mg:'',
+    difficulty_fr:'Modérée', difficulty_en:'Moderate', difficulty_mg:'Antonony',
+    best_period_fr:'Avr – Nov', best_period_en:'Apr – Nov', best_period_mg:'Avr – Nov',
+    transport_fr:'4×4', transport_en:'4×4', transport_mg:'4×4',
+    max_group:8,
+    gallery:['','','','',''],
+    days_fr:[], days_en:[],
+    incl_fr:[], incl_en:[],
+    excl_fr:[], excl_en:[]
+  } : JSON.parse(JSON.stringify(siteData.circuits[idx]));
+
+  document.getElementById('circuitModalTitle').textContent = isNew ? 'Nouveau circuit' : 'Modifier : ' + c.name_fr;
+
+  document.getElementById('circuitModalBody').innerHTML = `
+    <div class="section-divider">Informations générales</div>
+    <div class="f-row3">
+      <div class="f-group"><label>ID (slug URL)</label><input id="c_id" value="${c.id}" /><small>Lettres, chiffres, tirets uniquement</small></div>
+      <div class="f-group"><label>Durée (jours)</label><input type="number" id="c_days" value="${c.duration_days}" min="1" /></div>
+      <div class="f-group"><label>Prix (€)</label><input type="number" id="c_price" value="${c.price}" min="0" /></div>
+    </div>
+    <div class="f-row3">
+      <div class="f-group"><label>Groupe max</label><input type="number" id="c_maxgroup" value="${c.max_group}" min="1" /></div>
+      <div class="f-group"><label>Badge (FR)</label><input id="c_pill_fr" value="${c.pill_fr}" /></div>
+      <div class="f-group"><label>Badge (EN)</label><input id="c_pill_en" value="${c.pill_en}" /></div>
+    </div>
+
+    <div class="section-divider">Noms</div>
+    <div class="f-group"><label>Nom (Français)</label><input id="c_name_fr" value="${c.name_fr}" /></div>
+    <div class="f-group"><label>Nom (English)</label><input id="c_name_en" value="${c.name_en}" /></div>
+    <div class="f-group"><label>Nom (Malagasy)</label><input id="c_name_mg" value="${c.name_mg}" /></div>
+
+    <div class="section-divider">Descriptions courtes (carte)</div>
+    <div class="f-group"><label>Description (FR)</label><textarea id="c_desc_fr">${c.desc_fr}</textarea></div>
+    <div class="f-group"><label>Description (EN)</label><textarea id="c_desc_en">${c.desc_en}</textarea></div>
+    <div class="f-group"><label>Description (MG)</label><textarea id="c_desc_mg">${c.desc_mg}</textarea></div>
+
+    <div class="section-divider">Localisation & Transport</div>
+    <div class="f-row3">
+      <div class="f-group"><label>Lieu (FR)</label><input id="c_loc_fr" value="${c.location_fr}" /></div>
+      <div class="f-group"><label>Lieu (EN)</label><input id="c_loc_en" value="${c.location_en}" /></div>
+      <div class="f-group"><label>Lieu (MG)</label><input id="c_loc_mg" value="${c.location_mg}" /></div>
+    </div>
+    <div class="f-row3">
+      <div class="f-group"><label>Transport (FR)</label><input id="c_trans_fr" value="${c.transport_fr}" /></div>
+      <div class="f-group"><label>Difficulté (FR)</label><input id="c_diff_fr" value="${c.difficulty_fr}" /></div>
+      <div class="f-group"><label>Meilleure période (FR)</label><input id="c_period_fr" value="${c.best_period_fr}" /></div>
+    </div>
+    <div class="f-row3">
+      <div class="f-group"><label>Transport (EN)</label><input id="c_trans_en" value="${c.transport_en}" /></div>
+      <div class="f-group"><label>Difficulté (EN)</label><input id="c_diff_en" value="${c.difficulty_en}" /></div>
+      <div class="f-group"><label>Meilleure période (EN)</label><input id="c_period_en" value="${c.best_period_en}" /></div>
+    </div>
+
+    <div class="section-divider">Images</div>
+    <div class="f-group">
+      <label>Image carte (URL)</label>
+      <input id="c_img" value="${c.image}" oninput="document.getElementById('c_img_preview').src=this.value" />
+      <div class="img-preview"><img id="c_img_preview" src="${c.image}" alt="preview" onerror="this.src=''" /></div>
+    </div>
+    <div class="f-group">
+      <label>Image hero / bannière (URL)</label>
+      <input id="c_hero_img" value="${c.hero_image}" oninput="document.getElementById('c_hero_preview').src=this.value" />
+      <div class="img-preview"><img id="c_hero_preview" src="${c.hero_image}" alt="preview" onerror="this.src=''" /></div>
+    </div>
+    <div class="f-group">
+      <label>Galerie (5 images URL)</label>
+      <div class="gallery-list" id="galleryBuilder">
+        ${(c.gallery || ['','','','','']).map((url, gi) => `
+          <div class="gallery-item">
+            <img src="${url}" onerror="this.style.opacity='.2'" />
+            <input value="${url}" placeholder="URL image ${gi+1}" oninput="this.previousElementSibling.src=this.value" data-gi="${gi}" />
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="section-divider">Programme (Français)</div>
+    <div class="days-list" id="daysFR">
+      ${(c.days_fr||[]).map((d,i) => dayRowHTML(d,i,'fr')).join('')}
+    </div>
+    <button class="btn btn-ghost btn-sm" style="margin-top:.6rem" onclick="addDay('fr')"><i class="fas fa-plus"></i> Ajouter un jour (FR)</button>
+
+    <div class="section-divider" style="margin-top:1.5rem">Programme (English)</div>
+    <div class="days-list" id="daysEN">
+      ${(c.days_en||[]).map((d,i) => dayRowHTML(d,i,'en')).join('')}
+    </div>
+    <button class="btn btn-ghost btn-sm" style="margin-top:.6rem" onclick="addDay('en')"><i class="fas fa-plus"></i> Add a day (EN)</button>
+
+    <div class="section-divider" style="margin-top:1.5rem">Inclus / Non inclus (FR)</div>
+    <div class="f-group">
+      <label>Inclus (FR) — une ligne par élément</label>
+      <textarea id="c_incl_fr" rows="5">${(c.incl_fr||[]).join('\n')}</textarea>
+    </div>
+    <div class="f-group">
+      <label>Non inclus (FR)</label>
+      <textarea id="c_excl_fr" rows="4">${(c.excl_fr||[]).join('\n')}</textarea>
+    </div>
+    <div class="f-group">
+      <label>Inclus (EN)</label>
+      <textarea id="c_incl_en" rows="5">${(c.incl_en||[]).join('\n')}</textarea>
+    </div>
+    <div class="f-group">
+      <label>Non inclus (EN)</label>
+      <textarea id="c_excl_en" rows="4">${(c.excl_en||[]).join('\n')}</textarea>
+    </div>
+  `;
+  document.getElementById('circuitModal').style.display = 'flex';
+}
+
+function dayRowHTML(d, i, lang) {
+  return `<div class="day-item" data-lang="${lang}" data-i="${i}">
+    <input placeholder="J${i+1}" value="${d.num||''}" class="day-num-input" />
+    <input placeholder="Titre" value="${d.title||''}" class="day-title-input" />
+    <input placeholder="Description" value="${d.desc||''}" class="day-desc-input" />
+    <button class="day-remove" onclick="this.closest('.day-item').remove()"><i class="fas fa-times"></i></button>
+  </div>`;
+}
+
+function addDay(lang) {
+  const list = document.getElementById('days' + lang.toUpperCase());
+  const i = list.children.length;
+  list.insertAdjacentHTML('beforeend', dayRowHTML({num:'J'+(i+1),title:'',desc:''},i,lang));
+}
+
+function saveCircuit() {
+  const v = id => document.getElementById(id)?.value || '';
+  const lines = id => (document.getElementById(id)?.value||'').split('\n').filter(l=>l.trim());
+  const getDays = (lang) => {
+    const rows = document.querySelectorAll(`#days${lang.toUpperCase()} .day-item`);
+    return Array.from(rows).map(row => ({
+      num: row.querySelector('.day-num-input')?.value || '',
+      title: row.querySelector('.day-title-input')?.value || '',
+      desc: row.querySelector('.day-desc-input')?.value || ''
+    }));
+  };
+  const getGallery = () => {
+    return Array.from(document.querySelectorAll('#galleryBuilder input')).map(i => i.value);
+  };
+
+  const c = {
+    id: v('c_id').replace(/[^a-z0-9-]/g,'') || ('circuit-' + Date.now()),
+    slug: v('c_id'),
+    pill_fr: v('c_pill_fr'), pill_en: v('c_pill_en'), pill_mg: v('c_pill_fr'),
+    duration_days: parseInt(v('c_days')) || 7,
+    price: parseInt(v('c_price')) || 0,
+    max_group: parseInt(v('c_maxgroup')) || 8,
+    location_fr: v('c_loc_fr'), location_en: v('c_loc_en'), location_mg: v('c_loc_mg'),
+    name_fr: v('c_name_fr'), name_en: v('c_name_en'), name_mg: v('c_name_mg'),
+    desc_fr: v('c_desc_fr'), desc_en: v('c_desc_en'), desc_mg: v('c_desc_mg'),
+    difficulty_fr: v('c_diff_fr'), difficulty_en: v('c_diff_en'), difficulty_mg: v('c_diff_fr'),
+    best_period_fr: v('c_period_fr'), best_period_en: v('c_period_en'), best_period_mg: v('c_period_fr'),
+    transport_fr: v('c_trans_fr'), transport_en: v('c_trans_en'), transport_mg: v('c_trans_fr'),
+    image: v('c_img'), hero_image: v('c_hero_img'),
+    gallery: getGallery(),
+    days_fr: getDays('fr'), days_en: getDays('en'),
+    incl_fr: lines('c_incl_fr'), incl_en: lines('c_incl_en'),
+    excl_fr: lines('c_excl_fr'), excl_en: lines('c_excl_en')
+  };
+
+  if (editingCircuitIndex === null) {
+    siteData.circuits.push(c);
+  } else {
+    siteData.circuits[editingCircuitIndex] = c;
+  }
+  saveSiteData(siteData);
+  closeModal('circuitModal');
+  renderCircuitsAdmin();
+  toast('✓ Circuit enregistré !');
+}
+
+function deleteCircuit(i) {
+  if (!confirm(`Supprimer "${siteData.circuits[i].name_fr}" ? Cette action est irréversible.`)) return;
+  siteData.circuits.splice(i, 1);
+  saveSiteData(siteData);
+  renderCircuitsAdmin();
+  toast('Circuit supprimé');
+}
+
+/* ================================================================
+   GROUPED ADMIN
+================================================================ */
+function renderGroupedAdmin() {
+  const grid = document.getElementById('groupedAdminGrid');
+  grid.innerHTML = siteData.grouped.map((g, i) => {
+    const left = g.max_places - g.taken;
+    const pct = Math.round((g.taken / g.max_places) * 100);
+    return `
+    <div class="admin-card">
+      <div class="admin-card-img">
+        <img src="${g.image}" alt="${g.name_fr}" onerror="this.src='https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=300&q=60'" />
+        <div style="position:absolute;top:.5rem;left:.5rem;background:var(--dark);border:1px solid var(--border);border-radius:6px;padding:.25em .6em;font-size:.7rem;color:var(--gold)">${g.day} ${g.month_fr}</div>
+      </div>
+      <div class="admin-card-body">
+        <div class="admin-card-name">${g.name_fr}</div>
+        <div class="admin-card-meta">
+          <span><i class="fas fa-euro-sign"></i> ${g.price} €</span>
+          <span style="color:${left <= 3 ? '#e05555' : 'var(--green)'}"><i class="fas fa-users"></i> ${left}/${g.max_places} dispo</span>
+        </div>
+        <div class="bar-preview"><div class="bar-fill-preview" style="width:${pct}%"></div></div>
+        <div class="admin-card-actions" style="margin-top:.8rem">
+          <button class="btn btn-gold btn-sm" onclick="openGroupedModal(${i})"><i class="fas fa-edit"></i> Modifier</button>
+          <button class="btn btn-red btn-sm" onclick="deleteGrouped(${i})"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openGroupedModal(idx) {
+  editingGroupedIndex = idx;
+  const isNew = idx === null;
+  const g = isNew ? {
+    id: 'g-' + Date.now(),
+    name_fr:'', name_en:'', name_mg:'',
+    image:'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=700&q=80',
+    day:'01', month_fr:'Jan 2027', month_en:'Jan 2027', month_mg:'Jan 2027',
+    duration_fr:'7 jours', duration_en:'7 days', duration_mg:'7 andro',
+    departure_date:'', price:500, max_places:10, taken:0,
+    incl_fr:'', incl_en:'', incl_mg:''
+  } : JSON.parse(JSON.stringify(siteData.grouped[idx]));
+
+  document.getElementById('groupedModalTitle').textContent = isNew ? 'Nouveau voyage organisé' : 'Modifier : ' + g.name_fr;
+  document.getElementById('groupedModalBody').innerHTML = `
+    <div class="f-row2">
+      <div class="f-group"><label>Nom (FR)</label><input id="g_name_fr" value="${g.name_fr}" /></div>
+      <div class="f-group"><label>Nom (EN)</label><input id="g_name_en" value="${g.name_en}" /></div>
+    </div>
+    <div class="f-group"><label>Nom (MG)</label><input id="g_name_mg" value="${g.name_mg}" /></div>
+    <div class="f-group">
+      <label>Image (URL)</label>
+      <input id="g_img" value="${g.image}" oninput="document.getElementById('g_img_prev').src=this.value" />
+      <div class="img-preview"><img id="g_img_prev" src="${g.image}" onerror="this.src=''" /></div>
+    </div>
+    <div class="f-row3">
+      <div class="f-group"><label>Jour (ex: 12)</label><input id="g_day" value="${g.day}" /></div>
+      <div class="f-group"><label>Mois FR (ex: Juin 2026)</label><input id="g_month_fr" value="${g.month_fr}" /></div>
+      <div class="f-group"><label>Mois EN (ex: June 2026)</label><input id="g_month_en" value="${g.month_en}" /></div>
+    </div>
+    <div class="f-row3">
+      <div class="f-group"><label>Durée (FR)</label><input id="g_dur_fr" value="${g.duration_fr}" /></div>
+      <div class="f-group"><label>Durée (EN)</label><input id="g_dur_en" value="${g.duration_en}" /></div>
+      <div class="f-group"><label>Durée (MG)</label><input id="g_dur_mg" value="${g.duration_mg}" /></div>
+    </div>
+    <div class="f-row3">
+      <div class="f-group"><label>Prix (€/personne)</label><input type="number" id="g_price" value="${g.price}" /></div>
+      <div class="f-group"><label>Places max</label><input type="number" id="g_maxp" value="${g.max_places}" min="1" /></div>
+      <div class="f-group"><label>Places déjà prises</label><input type="number" id="g_taken" value="${g.taken}" min="0"
+        oninput="updateBarPreview()" /></div>
+    </div>
+    <div style="margin-bottom:1rem">
+      <div style="font-size:.72rem;color:var(--gray-l);margin-bottom:.3rem">Aperçu barre de places</div>
+      <div class="bar-preview"><div class="bar-fill-preview" id="g_bar_preview" style="width:${Math.round(g.taken/g.max_places*100)}%"></div></div>
+      <div style="font-size:.73rem;color:var(--green);margin-top:.3rem" id="g_bar_label">${g.max_places - g.taken} places disponibles</div>
+    </div>
+    <div class="f-group"><label>Ce qui est inclus (FR)</label><input id="g_incl_fr" value="${g.incl_fr}" /></div>
+    <div class="f-group"><label>Ce qui est inclus (EN)</label><input id="g_incl_en" value="${g.incl_en}" /></div>
+    <div class="f-group"><label>Ce qui est inclus (MG)</label><input id="g_incl_mg" value="${g.incl_mg||''}" /></div>
+  `;
+  document.getElementById('groupedModal').style.display = 'flex';
+}
+
+function updateBarPreview() {
+  const max = parseInt(document.getElementById('g_maxp')?.value) || 1;
+  const taken = parseInt(document.getElementById('g_taken')?.value) || 0;
+  const left = max - taken;
+  const pct = Math.round(taken / max * 100);
+  const bar = document.getElementById('g_bar_preview');
+  const lbl = document.getElementById('g_bar_label');
+  if (bar) bar.style.width = pct + '%';
+  if (lbl) { lbl.textContent = left <= 3 ? `⚠ ${left} place restante${left > 1 ? 's' : ''}` : `${left} places disponibles`; lbl.style.color = left <= 3 ? '#e05555' : 'var(--green)'; }
+}
+
+function saveGrouped() {
+  const v = id => document.getElementById(id)?.value || '';
+  const g = {
+    id: editingGroupedIndex === null ? ('g-' + Date.now()) : siteData.grouped[editingGroupedIndex].id,
+    name_fr: v('g_name_fr'), name_en: v('g_name_en'), name_mg: v('g_name_mg'),
+    image: v('g_img'),
+    day: v('g_day'), month_fr: v('g_month_fr'), month_en: v('g_month_en'), month_mg: v('g_month_en'),
+    duration_fr: v('g_dur_fr'), duration_en: v('g_dur_en'), duration_mg: v('g_dur_mg'),
+    price: parseInt(v('g_price')) || 0,
+    max_places: parseInt(v('g_maxp')) || 10,
+    taken: parseInt(v('g_taken')) || 0,
+    incl_fr: v('g_incl_fr'), incl_en: v('g_incl_en'), incl_mg: v('g_incl_mg')
+  };
+  if (editingGroupedIndex === null) siteData.grouped.push(g);
+  else siteData.grouped[editingGroupedIndex] = g;
+  saveSiteData(siteData);
+  closeModal('groupedModal');
+  renderGroupedAdmin();
+  toast('✓ Voyage enregistré !');
+}
+
+function deleteGrouped(i) {
+  if (!confirm(`Supprimer "${siteData.grouped[i].name_fr}" ?`)) return;
+  siteData.grouped.splice(i, 1);
+  saveSiteData(siteData);
+  renderGroupedAdmin();
+  toast('Voyage supprimé');
+}
+
+/* ================================================================
+   TESTIMONIALS ADMIN
+================================================================ */
+function renderTestimonialsAdmin() {
+  const grid = document.getElementById('temoAdminGrid');
+  grid.innerHTML = siteData.testimonials.map((tm, i) => `
+    <div class="admin-card">
+      <div class="admin-card-body" style="padding-top:1.2rem">
+        <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:.8rem">
+          <img src="${tm.avatar}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)" onerror="this.style.display='none'" />
+          <div>
+            <div style="font-size:.9rem;font-weight:700">${tm.name}</div>
+            <div style="font-size:.72rem;color:var(--gray)">${tm.origin_fr}</div>
+          </div>
+        </div>
+        <p style="font-size:.8rem;color:var(--gray-l);font-style:italic;margin-bottom:.9rem;line-height:1.6">"${(tm.text_fr||'').substring(0,100)}…"</p>
+        <div class="admin-card-actions">
+          <button class="btn btn-gold btn-sm" onclick="openTestimonialModal(${i})"><i class="fas fa-edit"></i> Modifier</button>
+          <button class="btn btn-red btn-sm" onclick="deleteTemo(${i})"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function openTestimonialModal(idx) {
+  editingTemoIndex = idx;
+  const tm = idx === null ? { stars:5, text_fr:'', text_en:'', text_mg:'', name:'', origin_fr:'', origin_en:'', origin_mg:'', avatar:'' } : JSON.parse(JSON.stringify(siteData.testimonials[idx]));
+  document.getElementById('temoModalBody').innerHTML = `
+    <div class="f-row2">
+      <div class="f-group"><label>Nom</label><input id="tm_name" value="${tm.name}" /></div>
+      <div class="f-group"><label>Étoiles (1-5)</label><input type="number" id="tm_stars" value="${tm.stars}" min="1" max="5" /></div>
+    </div>
+    <div class="f-group"><label>Avatar (URL)</label><input id="tm_avatar" value="${tm.avatar}" oninput="document.getElementById('tm_av_prev').src=this.value" /></div>
+    <img id="tm_av_prev" src="${tm.avatar}" style="width:56px;height:56px;border-radius:50%;object-fit:cover;margin-bottom:1rem" onerror="this.style.display='none'" />
+    <div class="f-group"><label>Origine (FR)</label><input id="tm_ori_fr" value="${tm.origin_fr}" placeholder="Paris — Circuit RN7, 10 jours" /></div>
+    <div class="f-group"><label>Origine (EN)</label><input id="tm_ori_en" value="${tm.origin_en}" /></div>
+    <div class="f-group"><label>Témoignage (FR)</label><textarea id="tm_text_fr" rows="4">${tm.text_fr}</textarea></div>
+    <div class="f-group"><label>Témoignage (EN)</label><textarea id="tm_text_en" rows="4">${tm.text_en}</textarea></div>
+    <div class="f-group"><label>Témoignage (MG)</label><textarea id="tm_text_mg" rows="4">${tm.text_mg||''}</textarea></div>
+  `;
+  document.getElementById('temoModal').style.display = 'flex';
+}
+
+function saveTestimonial() {
+  const v = id => document.getElementById(id)?.value || '';
+  const tm = {
+    stars: parseInt(v('tm_stars')) || 5,
+    name: v('tm_name'), avatar: v('tm_avatar'),
+    text_fr: v('tm_text_fr'), text_en: v('tm_text_en'), text_mg: v('tm_text_mg'),
+    origin_fr: v('tm_ori_fr'), origin_en: v('tm_ori_en'), origin_mg: v('tm_ori_en')
+  };
+  if (editingTemoIndex === null) siteData.testimonials.push(tm);
+  else siteData.testimonials[editingTemoIndex] = tm;
+  saveSiteData(siteData);
+  closeModal('temoModal');
+  renderTestimonialsAdmin();
+  toast('✓ Témoignage enregistré !');
+}
+
+function deleteTemo(i) {
+  if (!confirm('Supprimer ce témoignage ?')) return;
+  siteData.testimonials.splice(i, 1);
+  saveSiteData(siteData); renderTestimonialsAdmin();
+  toast('Supprimé');
+}
+
+/* ================================================================
+   META
+================================================================ */
+function loadMeta() {
+  const m = siteData.meta;
+  document.getElementById('meta_phone').value = m.phone || '';
+  document.getElementById('meta_wa').value    = m.whatsapp || '';
+  document.getElementById('meta_email').value = m.email || '';
+  document.getElementById('meta_ig').value    = m.instagram || '';
+  document.getElementById('meta_fb').value    = m.facebook || '';
+  document.getElementById('meta_ta').value    = m.tripadvisor || '';
+  document.getElementById('meta_formspree').value = m.formspree || '';
+}
+function saveMeta() {
+  siteData.meta = {
+    phone:      document.getElementById('meta_phone').value,
+    whatsapp:   document.getElementById('meta_wa').value,
+    email:      document.getElementById('meta_email').value,
+    instagram:  document.getElementById('meta_ig').value,
+    facebook:   document.getElementById('meta_fb').value,
+    tripadvisor:document.getElementById('meta_ta').value,
+    formspree:  document.getElementById('meta_formspree').value
+  };
+  saveSiteData(siteData);
+  toast('✓ Paramètres sauvegardés !');
+}
+
+/* ---- UTILS ---- */
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+function closeIfOverlay(e, id) { if (e.target === e.currentTarget) closeModal(id); }
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(siteData, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'zenith_data.json'; a.click();
+}
+
+function importDataPrompt() {
+  const input = document.createElement('input');
+  input.type = 'file'; input.accept = '.json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const parsed = JSON.parse(ev.target.result);
+        if (parsed.circuits && parsed.grouped) {
+          siteData = parsed; saveSiteData(siteData);
+          initAdmin(); toast('✓ Données importées !');
+        } else { toast('Format JSON invalide', true); }
+      } catch { toast('Erreur lecture JSON', true); }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+function confirmReset() {
+  if (confirm('Réinitialiser TOUTES les données ? Cette action supprime toutes vos modifications.')) {
+    resetSiteData();
+    siteData = loadSiteData();
+    initAdmin();
+    toast('Données réinitialisées');
+  }
+}
+</script>
+</body>
+</html>
